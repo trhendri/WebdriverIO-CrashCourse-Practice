@@ -180,3 +180,59 @@ Flow
         expect(originalTotal).not.toBe(updatedTotal);
     });
 });
+
+//! Switch to Costco, Target is a mess.
+
+//Search Macbook
+//Select first item
+//Grab price of item
+//Click add to cart
+//Verify text 'Added to Cart'
+//verify the amount in subtotal of original item
+
+describe.only("Costco Add to Cart Flow", () => {
+    beforeEach(async () => {
+        await browser.url("https://www.costco.com");
+        /* await browser.execute(() => { 
+            localStorage.clear(); 
+            sessionStorage.clear(); 
+            })
+        */
+    });
+    it("Should search Macbook", async () => {
+        
+        await page.search(page.searchTerm);
+        await browser.pause(2000);
+    });
+
+    it("Should select first item and add to cart", async () => {
+        await page.search(page.searchTerm);
+        const firstItem = await $$('.product-img-holder')[0];
+        await firstItem.click();
+        await browser.pause(2000);
+        
+        const addToCartButton = await $('div#add-to-cart');
+        await addToCartButton.waitForStable();
+        
+        await addToCartButton.click();
+        const itemPrice =  await $('span.value').getText();
+        const modalBody = await $('.modal-body');
+        await modalBody.waitForDisplayed({ timeout: 12000 });
+        const addToCartModalTitle = await $('h2.modal-title').getText();
+        
+        console.log(addToCartModalTitle);
+        console.log(itemPrice);
+        await expect(addToCartModalTitle).toContain("Added to Cart");
+        const checkoutButton= await $('//a[contains(text(), "View Cart")]');
+        await checkoutButton.click();
+        const cartSubtotal = await $('//div[@automation-id = "totalPriceOutput_1"]').getText();
+        console.log(cartSubtotal);
+        await expect(cartSubtotal).toContain(itemPrice);
+
+
+
+
+    });
+
+    it("", async () => {});
+});

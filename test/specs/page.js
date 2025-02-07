@@ -38,4 +38,20 @@ module.exports = {
         const searchButton = await $(this.searchButton);
         await searchButton.click();
     },
+
+    //! Costco
+
+    //Data
+    searchTerm: "macbook",
+
+    //Functions
+
+    search: async function (searchTerm) {
+        const searchBar = await $('//input[@aria-describedby ="typeahead-search-field-description"]');
+        await searchBar.setValue(searchTerm);
+        const searchBarText = await searchBar.getValue();
+        await expect(searchBarText).toBe("macbook");
+        const searchButton = await $('//button[@data-testid="SearchButton"]');
+        await searchButton.click();
+    },
 };
