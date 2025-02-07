@@ -3,24 +3,26 @@ module.exports = {
     //Inputs
     searchBox: 'input[type="search"]',
 
-
     //Buttons
     searchButton: 'button[type="submit"]',
 
-    searchText: 'div[data-test="resultsHeading"]',
-
+    searchText: '//div[@data-test="lp-resultsCount"]',
+    viewCartAndCheckoutButton: '//a[contains(text(), "View cart & check out")]',
+    orderSummaryButton: '//button[contains(@aria-label, "Order Summary")]',
     //Modals
-    autoSuggestBox: '#typeahead',
+    autoSuggestBox: "#typeahead",
 
-    firstItem:'.sc-e0eaa558-0',
+    firstItem: ".sc-e0eaa558-0",
 
     //Functions
 
     addToCart: async function () {
-        const firstItem = await $('.sc-e0eaa558-0');
-        
+        const firstItem = await $$(".sc-e0eaa558-0")[0];
+        await firstItem.waitForDisplayed();
+        await firstItem.waitForClickable();
+
         await firstItem.click();
-        await console.log("Afterclick");
+        console.log("Afterclick");
         const addToCartButton = await $$('div.sc-529a2ea7-0 button[type="button"]')[1];
         await addToCartButton.click();
         const addCartModal = await $(".ReactModal__Content");

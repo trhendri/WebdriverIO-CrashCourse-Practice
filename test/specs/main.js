@@ -21,7 +21,7 @@ const page = require("./page");
 // WebDRIVER IO CRASH COURSE, TO DO:  move to its own project COMPLETE
 
 describe("Target", () => {
-/*
+    /*
     //runs before each It block
     beforeEach(async () => { 
         await browser.url("/"); 
@@ -37,21 +37,12 @@ describe("Target", () => {
         await browser.refresh(); 
     });
     */
-    
+
     it("Check browser URL and Title", async () => {
         await browser.url("/");
         await expect(browser).toHaveUrl("https://www.target.com/");
         //await expect(browser).toHaveTitleContaining('Amazon.com');
     });
-
-    /* 
-   it("Check Jest is working with no errors", async () => {
-        const four = 4;
-        const five = 5;
-        await console.log(four + five);
-        await expect(four + five).toBeLessThan(20);
-    });
-    */
 
     it("Search Content and Verify Text", async () => {
         await browser.url("/");
@@ -80,7 +71,7 @@ describe("Target", () => {
         await browser.keys("ArrowDown");
 
         await browser.keys("ArrowDown");
-        const matcher = await $$(".sc-bd5d6398-0.tsLvz")[1].getText();
+        const matcher = await $$(".jDJjQX")[1].getText();
         await console.log(matcher);
 
         await browser.keys("Enter");
@@ -115,9 +106,8 @@ Flow:
 
 describe("Add to Cart Flow", () => {
     // Why should we add a before block here instead of just using it in it block? does it run before every it block if there were multiple?
-    before(async () => {
+    beforeEach(async () => {
         await browser.url("/");
-        
     });
 
     it("Add to Cart", async () => {
@@ -130,20 +120,25 @@ describe("Add to Cart Flow", () => {
         await browser.pause(8000);
         const productListGrid = await $('div[data-module-type="ProductListGrid"]');
         await productListGrid.click();
-       
-    
+
         await page.addToCart();
-       
+
         const itemPrice = await $$('span[data-test="product-price"]')[0].getText();
-        const addToCartButton = await $('button[aria-label="Add to cart for Unlimited Cellular HardShell Case for 13-inch MacBook Retina - Blue"]');
-        await addToCartButton.click();
+        console.log("item price:" + itemPrice);
+        //const addToCartButton = await $$('button=Add to cart]')[0];
+        //await addToCartButton.click();
         const addCartModal = await $(".ReactModal__Content");
         await addCartModal.waitForExist();
         const addToCartConfirm = await $('span[class="h-text-lg"]').getText();
         await expect(addToCartConfirm).toContain("Added to cart");
-        const viewCartButton = await $('div a[class="sc-ddc722c0-0 sc-3d5333d1-0 flfJAZ jaKlHa"]');
-        await viewCartButton.click();
-        const subtotal = await $(".sc-93ec7147-3.hNHMW").getText();
+        const viewCartAndCheckoutButton = await $(page.viewCartAndCheckoutButton);
+        await viewCartAndCheckoutButton.click();
+        const orderSummaryButton = await $(page.orderSummaryButton);
+        await orderSummaryButton.click();
+        const targetSubtotal = await $$(".styles_ndsCol__MIQSp > p")[2];
+        await targetSubtotal.waitForDisplayed();
+        const subtotal = await targetSubtotal.getText();
+        console.log(subtotal);
         await expect(subtotal).toContain(itemPrice);
     });
 
@@ -158,25 +153,30 @@ Flow
 */
 
     it("Update Cart and Verify", async () => {
-       
+        await page.keywordSearch();
+
         await page.addToCart();
         await browser.pause(2000);
         const closeButton = await $('button[aria-label="close"]');
         await closeButton.click();
         const cartButton = await $('a[data-test="@web/CartLink"]');
         await cartButton.click();
-        const originalTotal = await $("div.sc-5da3fdcc-0>div.sc-f82024d1-0.fMpNwo>p.h-text-bs");
-        const originalTotalText = await originalTotal.getHTML();
-        const quantityButton = await $(".sc-e78156cc-2.iwEujR");
+        const orderSummaryButton = await $(page.orderSummaryButton);
+        await orderSummaryButton.click();
+        await browser.pause(1000);
+        const originalTotal = await $('//div[@data-test="cart-summary-total"]').getText();
+        console.log(originalTotal);
+
+        const quantityButton = await $('//select[@data-test="cartItem-qty"]');
         await quantityButton.click();
+
         await browser.keys("ArrowDown");
         await browser.keys("Enter");
         await browser.pause(2000);
 
-        const updatedTotal = await $("div.sc-5da3fdcc-0>div.sc-f82024d1-0.fMpNwo>p.h-text-bs");
-        const updatedTotalText = await updatedTotal.getHTML();
-        await console.log(originalTotalText);
-        await console.log(updatedTotalText);
-        expect(originalTotalText).not.toBe(updatedTotalText);
+        //const updatedTotal = await $("div.sc-5da3fdcc-0>div.sc-f82024d1-0.fMpNwo>p.h-text-bs");
+        const updatedTotal = await $('//div[@data-test="cart-summary-total"]').getText();
+        console.log(updatedTotal);
+        expect(originalTotal).not.toBe(updatedTotal);
     });
 });
