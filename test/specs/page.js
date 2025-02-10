@@ -54,4 +54,31 @@ module.exports = {
         const searchButton = await $('//button[@data-testid="SearchButton"]');
         await searchButton.click();
     },
+
+    addFirstItemToCart: async function() {
+       
+        const firstItem = await $$('.product-img-holder')[0];
+        await firstItem.click();
+        await browser.pause(2000);
+        
+        const addToCartButton = await $('div#add-to-cart');
+        await addToCartButton.waitForStable();
+        
+        await addToCartButton.click();
+        const itemPrice =  await $('span.value').getText();
+        const modalBody = await $('.modal-body');
+        await modalBody.waitForDisplayed({ timeout: 12000 });
+        const addToCartModalTitle = await $('h2.modal-title').getText();
+        
+        console.log(addToCartModalTitle);
+        console.log(itemPrice);
+
+        const checkoutButton= await $('//a[contains(text(), "View Cart")]');
+        await checkoutButton.click();
+        await browser.pause(2000);
+        const cartSubtotal = await $('//div[@automation-id = "totalPriceOutput_1"]').getText();
+        console.log(cartSubtotal);
+        
+
+    }
 };

@@ -225,14 +225,39 @@ describe.only("Costco Add to Cart Flow", () => {
         await expect(addToCartModalTitle).toContain("Added to Cart");
         const checkoutButton= await $('//a[contains(text(), "View Cart")]');
         await checkoutButton.click();
+        await browser.pause(2000);
         const cartSubtotal = await $('//div[@automation-id = "totalPriceOutput_1"]').getText();
         console.log(cartSubtotal);
         await expect(cartSubtotal).toContain(itemPrice);
 
+/*if opacity is set to 0, get through dom:
+ in chrome terminal:  document.querySelector("selector").innnerText or .textContent
 
+  in wdio: const subtotal = await browser.execute(() => {   ---browser.execute takes script
+ return document.querySelector('selector').textContent
+ // });
+
+ */
 
 
     });
 
-    it("", async () => {});
+//Flow
+// 1. Go to cart
+// 2. Change quantity to 2
+// 3. Check subtotal is updated, no need to verify text
+
+    it.only("Update Cart and verify", async () => {
+        await page.search(page.searchTerm);
+        await browser.pause(2000);
+        await page.addFirstItemToCart();
+        const originalSubtotal = await $('//div[@automation-id = "totalPriceOutput_1"]').getText();
+        const addQuantityButton = await $('//button[@name="plusQty"]');
+        await addQuantityButton.click();
+        await browser.pause(2000);
+        const newSubtotal = await $('//div[@automation-id = "totalPriceOutput_1"]').getText();
+        console.log(newSubtotal);
+        await expect(newSubtotal).not.toBe(originalSubtotal);
+        
+    });
 });
